@@ -1,0 +1,2899 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Perakaunan Koperasi</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        
+        /* Enhanced UI Components */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-bg-alt {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .gradient-bg-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .gradient-bg-warning {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        .sub-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sub-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        .sub-nav-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sub-nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .sub-nav-btn:hover::before {
+            left: 100%;
+        }
+        
+        .sub-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sub-nav-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-bottom: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .main-nav-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .main-nav-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .form-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .transaction-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid transparent;
+        }
+        
+        .transaction-item:hover {
+            transform: translateX(4px);
+            border-left-color: #667eea;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-bounce {
+            animation: pulse 2s infinite;
+        }
+        
+        .section-fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+        
+        /* Enhanced password screen */
+        .password-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .password-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Enhanced header */
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full bg-gradient-to-br from-blue-50 to-indigo-100 font-sans">
+  <div class="min-h-full"><!-- Header -->
+   <header class="header-gradient shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10">
+     <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+       <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-filter backdrop-blur-sm">
+        <svg class="w-8 h-8 text-white" fill="currentColor" viewbox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
+        </svg>
+       </div>
+       <div>
+        <h1 id="cooperative-title" class="text-3xl font-bold text-white drop-shadow-lg">KOPERASI ADHAM AL-HUSAINY BERHAD</h1>
+        <p class="text-white text-opacity-90 text-sm mt-1">Sistem Pengurusan Koperasi Digital</p>
+       </div>
+      </div>
+      <div class="text-right bg-white bg-opacity-20 backdrop-filter backdrop-blur-sm rounded-xl p-4">
+       <div class="text-sm text-white text-opacity-80">
+        Jumlah Baki
+       </div>
+       <div id="total-balance" class="text-2xl font-bold text-white drop-shadow-lg">
+        RM 0
+       </div>
+       <div class="text-xs text-white text-opacity-70 mt-1">
+        Dikemas kini secara langsung
+       </div>
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Navigation -->
+   <nav class="bg-indigo-600 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex space-x-8"><button onclick="showMainSection('dashboard')" class="main-nav-btn px-4 py-4 text-sm font-medium text-white hover:text-indigo-200 border-b-2 border-transparent hover:border-indigo-200 transition-colors"> 📊 Papan Pemuka </button> <button onclick="showMainSection('members')" class="main-nav-btn px-4 py-4 text-sm font-medium text-white hover:text-indigo-200 border-b-2 border-transparent hover:border-indigo-200 transition-colors"> 👥 Data Ahli </button> <button onclick="showMainSection('activities')" class="main-nav-btn px-4 py-4 text-sm font-medium text-white hover:text-indigo-200 border-b-2 border-transparent hover:border-indigo-200 transition-colors"> 📊 Laporan Aktiviti </button> <button onclick="showMainSection('financial')" class="main-nav-btn px-4 py-4 text-sm font-medium text-white hover:text-indigo-200 border-b-2 border-transparent hover:border-indigo-200 transition-colors"> 💰 Data Kewangan </button>
+     </div>
+    </div>
+   </nav><!-- Sub Navigation for Activities -->
+   <div id="activities-subnav" class="sub-nav shadow-sm hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex space-x-4 py-3"><button onclick="showSubSection('activities', 'savings')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 💰 Laporan Simpanan </button> <button onclick="showSubSection('activities', 'loans')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 📋 Laporan Pinjaman </button> <button onclick="showSubSection('activities', 'shares')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 📈 Laporan Syer </button> <button onclick="showSubSection('activities', 'members')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 👥 Laporan Ahli </button>
+     </div>
+    </div>
+   </div><!-- Sub Navigation for Financial -->
+   <div id="financial-subnav" class="sub-nav shadow-sm hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex space-x-4 py-3"><button onclick="showSubSection('financial', 'cashbook')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 📖 Buku Tunai </button> <button onclick="showSubSection('financial', 'cashflow')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 💸 Aliran Wang </button> <button onclick="showSubSection('financial', 'receipts')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 🧾 Resit &amp; Baucar </button> <button onclick="showSubSection('financial', 'transactions')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 📊 Transaksi </button> <button onclick="showSubSection('financial', 'budget')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 📋 Belanjawan </button> <button onclick="showSubSection('financial', 'accounts')" class="sub-nav-btn px-4 py-2 text-sm font-medium text-white rounded-lg"> 🏦 Carta Akaun </button>
+     </div>
+    </div>
+   </div><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"><!-- Dashboard Section -->
+    <div id="dashboard-section" class="main-section section-fade-in">
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card rounded-2xl shadow-xl p-6 card-hover border-l-4 border-green-500 relative overflow-hidden">
+       <div class="absolute top-0 right-0 w-20 h-20 bg-green-100 rounded-full -mr-10 -mt-10 opacity-50"></div>
+       <div class="flex items-center relative z-10">
+        <div class="flex-1">
+         <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Jumlah Ahli</p>
+         <p id="total-members" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+         <div class="flex items-center mt-2"><span class="text-xs text-green-600 font-medium">Aktif</span>
+         </div>
+        </div>
+        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center icon-bounce"><span class="text-2xl">👥</span>
+        </div>
+       </div>
+      </div>
+      <div class="stat-card rounded-2xl shadow-xl p-6 card-hover border-l-4 border-blue-500 relative overflow-hidden">
+       <div class="absolute top-0 right-0 w-20 h-20 bg-blue-100 rounded-full -mr-10 -mt-10 opacity-50"></div>
+       <div class="flex items-center relative z-10">
+        <div class="flex-1">
+         <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Wang Masuk</p>
+         <p id="total-income" class="text-3xl font-bold text-gray-900 mt-2">RM 0</p>
+         <div class="flex items-center mt-2"><span class="text-xs text-blue-600 font-medium">Bulan Ini</span>
+         </div>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center icon-bounce"><span class="text-2xl">💰</span>
+        </div>
+       </div>
+      </div>
+      <div class="stat-card rounded-2xl shadow-xl p-6 card-hover border-l-4 border-orange-500 relative overflow-hidden">
+       <div class="absolute top-0 right-0 w-20 h-20 bg-orange-100 rounded-full -mr-10 -mt-10 opacity-50"></div>
+       <div class="flex items-center relative z-10">
+        <div class="flex-1">
+         <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Wang Keluar</p>
+         <p id="total-expenses" class="text-3xl font-bold text-gray-900 mt-2">RM 0</p>
+         <div class="flex items-center mt-2"><span class="text-xs text-orange-600 font-medium">Bulan Ini</span>
+         </div>
+        </div>
+        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center icon-bounce"><span class="text-2xl">📋</span>
+        </div>
+       </div>
+      </div>
+      <div class="stat-card rounded-2xl shadow-xl p-6 card-hover border-l-4 border-purple-500 relative overflow-hidden">
+       <div class="absolute top-0 right-0 w-20 h-20 bg-purple-100 rounded-full -mr-10 -mt-10 opacity-50"></div>
+       <div class="flex items-center relative z-10">
+        <div class="flex-1">
+         <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide">Transaksi</p>
+         <p id="today-transactions" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+         <div class="flex items-center mt-2"><span class="text-xs text-purple-600 font-medium">Hari Ini</span>
+         </div>
+        </div>
+        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center icon-bounce"><span class="text-2xl">📊</span>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 card-hover border border-gray-100">
+       <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center"><span class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3"> <span class="text-white text-sm">📈</span> </span> Transaksi Terbaru</h3>
+        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+       </div>
+       <div id="recent-transactions" class="space-y-3 max-h-80 overflow-y-auto">
+        <div class="text-center py-12">
+         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl text-gray-400">📊</span>
+         </div>
+         <p class="text-gray-500 font-medium">Tiada transaksi</p>
+         <p class="text-gray-400 text-sm mt-1">Transaksi akan dipaparkan di sini</p>
+        </div>
+       </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-xl p-6 card-hover border border-gray-100">
+       <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center"><span class="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-600 rounded-lg flex items-center justify-center mr-3"> <span class="text-white text-sm">💼</span> </span> Ringkasan Kewangan</h3>
+        <div class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+         Live
+        </div>
+       </div>
+       <div class="space-y-6">
+        <div class="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+         <div class="flex items-center">
+          <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3"><span class="text-indigo-600">💰</span>
+          </div><span class="font-medium text-gray-700">Baki Tunai</span>
+         </div><span id="cash-balance" class="font-bold text-indigo-600 text-lg">RM 0</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
+         <div class="flex items-center">
+          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3"><span class="text-green-600">🏦</span>
+          </div><span class="font-medium text-gray-700">Jumlah Simpanan</span>
+         </div><span id="total-savings" class="font-bold text-green-600 text-lg">RM 0</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-100">
+         <div class="flex items-center">
+          <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3"><span class="text-orange-600">📋</span>
+          </div><span class="font-medium text-gray-700">Jumlah Pinjaman</span>
+         </div><span id="total-loans" class="font-bold text-orange-600 text-lg">RM 0</span>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+         <div class="flex items-center">
+          <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3"><span class="text-purple-600">📈</span>
+          </div><span class="font-medium text-gray-700">Jumlah Syer</span>
+         </div><span id="total-shares" class="font-bold text-purple-600 text-lg">RM 0</span>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div><!-- Members Section -->
+  <div id="members-section" class="main-section hidden">
+   <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+    <h3 class="text-lg font-semibold text-gray-900 mb-6">Borang Pendaftaran Ahli Baru</h3>
+    <form id="member-form" class="space-y-4"><!-- Maklumat Peribadi -->
+     <div class="border-b border-gray-200 pb-4">
+      <h4 class="text-md font-semibold text-gray-800 mb-3">Maklumat Peribadi</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div><label for="member-id" class="block text-sm font-medium text-gray-700 mb-1">ID Ahli</label> <input type="text" id="member-id" required readonly class="form-input w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-600 font-medium">
+       </div>
+       <div><label for="member-name" class="block text-sm font-medium text-gray-700 mb-1">Nama Penuh</label> <input type="text" id="member-name" required style="text-transform: uppercase;" class="form-input w-full px-4 py-3 rounded-xl font-medium">
+       </div>
+       <div><label for="ic-new" class="block text-sm font-medium text-gray-700 mb-1">No. K/P (Baru)</label> <input type="text" id="ic-new" placeholder="123456-12-1234" pattern="[0-9]{6}-[0-9]{2}-[0-9]{4}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+       <div><label for="ic-old" class="block text-sm font-medium text-gray-700 mb-1">No. K/P (Lama)</label> <input type="text" id="ic-old" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+       <div><label for="birth-date" class="block text-sm font-medium text-gray-700 mb-1">Tarikh Lahir</label> <input type="text" id="birth-date" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
+       </div>
+       <div><label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Jantina</label> <input type="text" id="gender" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
+       </div>
+       <div><label for="race" class="block text-sm font-medium text-gray-700 mb-1">Bangsa</label> <select id="race" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"> <option value="">Pilih Bangsa</option> <option value="Melayu">Melayu</option> <option value="Cina">Cina</option> <option value="India">India</option> <option value="Lain-lain">Lain-lain</option> </select>
+       </div>
+       <div><label for="religion" class="block text-sm font-medium text-gray-700 mb-1">Agama</label> <select id="religion" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"> <option value="">Pilih Agama</option> <option value="Islam">Islam</option> <option value="Buddha">Buddha</option> <option value="Kristian">Kristian</option> <option value="Hindu">Hindu</option> <option value="Lain-lain">Lain-lain</option> </select>
+       </div>
+      </div>
+     </div><!-- Alamat dan Hubungan -->
+     <div class="border-b border-gray-200 pb-4">
+      <h4 class="text-md font-semibold text-gray-800 mb-3">Alamat dan Hubungan</h4>
+      <div class="space-y-4">
+       <div><label for="address" class="block text-sm font-medium text-gray-700 mb-1">Alamat Surat Menyurat</label> <textarea id="address" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label for="phone-mobile" class="block text-sm font-medium text-gray-700 mb-1">No. Tel Bimbit</label> <input type="tel" id="phone-mobile" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+        <div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label> <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+       </div>
+      </div>
+     </div><!-- Maklumat Pekerjaan -->
+     <div class="border-b border-gray-200 pb-4">
+      <h4 class="text-md font-semibold text-gray-800 mb-3">Maklumat Pekerjaan</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div><label for="occupation" class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan</label> <input type="text" id="occupation" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+       <div><label for="employer-name" class="block text-sm font-medium text-gray-700 mb-1">Nama Majikan</label> <input type="text" id="employer-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+      </div>
+     </div>
+     <div class="flex justify-end space-x-4"><button type="button" onclick="printApplication()" class="bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors font-medium"> 🖨️ Cetak Permohonan </button> <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg"> ✨ Daftar Ahli Baru </button>
+     </div>
+    </form>
+   </div>
+   <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex justify-between items-center mb-4">
+     <h3 class="text-lg font-semibold text-gray-900">Senarai Ahli</h3>
+     <div class="flex space-x-3"><select id="members-list-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">Semua Ahli</option> <option value="active">Ahli Aktif</option> <option value="inactive">Ahli Tidak Aktif</option> </select> <select id="members-list-sort" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="name">Susun Mengikut Nama</option> <option value="id">Susun Mengikut ID</option> <option value="date">Susun Mengikut Tarikh Daftar</option> </select> <button onclick="printMembersListReport()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"> 🖨️ Cetak Laporan </button>
+     </div>
+    </div><!-- Summary Cards for Members List -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+     <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+      <div class="text-sm text-blue-600 font-medium">
+       Jumlah Ahli
+      </div>
+      <div id="members-list-total" class="text-2xl font-bold text-blue-700">
+       0
+      </div>
+     </div>
+     <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+      <div class="text-sm text-green-600 font-medium">
+       Ahli Aktif
+      </div>
+      <div id="members-list-active" class="text-2xl font-bold text-green-700">
+       0
+      </div>
+     </div>
+     <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+      <div class="text-sm text-yellow-600 font-medium">
+       Ahli Baru (Bulan Ini)
+      </div>
+      <div id="members-list-new-month" class="text-2xl font-bold text-yellow-700">
+       0
+      </div>
+     </div>
+     <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+      <div class="text-sm text-purple-600 font-medium">
+       Ahli Baru (Tahun Ini)
+      </div>
+      <div id="members-list-new-year" class="text-2xl font-bold text-purple-700">
+       0
+      </div>
+     </div>
+    </div>
+    <div id="members-list" class="space-y-3">
+     <p class="text-gray-500 text-center py-8">Tiada ahli berdaftar</p>
+    </div>
+   </div>
+  </div> <!-- Activities Section -->
+  <div id="activities-section" class="main-section hidden"><!-- Savings Sub-section -->
+   <div id="activities-savings" class="sub-section">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+     <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Laporan Simpanan Ahli</h3>
+      <div class="flex space-x-3"><select id="savings-period" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">Semua Tempoh</option> <option value="today">Hari Ini</option> <option value="week">Minggu Ini</option> <option value="month">Bulan Ini</option> <option value="year">Tahun Ini</option> </select> <button onclick="generateSavingsReport()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"> 📊 Jana Laporan </button> <button onclick="printSavingsReport()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"> 🖨️ Cetak PDF </button>
+      </div>
+     </div><!-- Summary Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+       <div class="text-sm text-green-600 font-medium">
+        Jumlah Deposit
+       </div>
+       <div id="total-deposits" class="text-2xl font-bold text-green-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+       <div class="text-sm text-red-600 font-medium">
+        Jumlah Pengeluaran
+       </div>
+       <div id="total-withdrawals" class="text-2xl font-bold text-red-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+       <div class="text-sm text-blue-600 font-medium">
+        Baki Simpanan
+       </div>
+       <div id="savings-balance" class="text-2xl font-bold text-blue-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+       <div class="text-sm text-purple-600 font-medium">
+        Bilangan Transaksi
+       </div>
+       <div id="savings-transactions-count" class="text-2xl font-bold text-purple-700">
+        0
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Senarai Transaksi Simpanan</h3>
+     <div id="savings-history" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada transaksi simpanan</p>
+     </div>
+    </div>
+   </div><!-- Loans Sub-section -->
+   <div id="activities-loans" class="sub-section hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+     <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Laporan Pinjaman Ahli</h3>
+      <div class="flex space-x-3"><select id="loans-period" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">Semua Tempoh</option> <option value="today">Hari Ini</option> <option value="week">Minggu Ini</option> <option value="month">Bulan Ini</option> <option value="year">Tahun Ini</option> </select> <select id="loans-status" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">Semua Status</option> <option value="approved">Diluluskan</option> <option value="pending">Menunggu</option> <option value="rejected">Ditolak</option> </select> <button onclick="generateLoansReport()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"> 📊 Jana Laporan </button> <button onclick="printLoansReport()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"> 🖨️ Cetak PDF </button>
+      </div>
+     </div><!-- Summary Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+       <div class="text-sm text-orange-600 font-medium">
+        Jumlah Pinjaman
+       </div>
+       <div id="total-loans-amount" class="text-2xl font-bold text-orange-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+       <div class="text-sm text-green-600 font-medium">
+        Diluluskan
+       </div>
+       <div id="approved-loans" class="text-2xl font-bold text-green-700">
+        0
+       </div>
+      </div>
+      <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+       <div class="text-sm text-yellow-600 font-medium">
+        Menunggu
+       </div>
+       <div id="pending-loans" class="text-2xl font-bold text-yellow-700">
+        0
+       </div>
+      </div>
+      <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+       <div class="text-sm text-red-600 font-medium">
+        Ditolak
+       </div>
+       <div id="rejected-loans" class="text-2xl font-bold text-red-700">
+        0
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Senarai Pinjaman</h3>
+     <div id="loans-list" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Belum ada pinjaman</p>
+     </div>
+    </div>
+   </div><!-- Shares Sub-section -->
+   <div id="activities-shares" class="sub-section hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+     <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Laporan Syer Ahli</h3>
+      <div class="flex space-x-3"><select id="shares-period" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">Semua Tempoh</option> <option value="today">Hari Ini</option> <option value="week">Minggu Ini</option> <option value="month">Bulan Ini</option> <option value="year">Tahun Ini</option> </select> <button onclick="generateSharesReport()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"> 📊 Jana Laporan </button> <button onclick="printSharesReport()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"> 🖨️ Cetak PDF </button>
+      </div>
+     </div><!-- Summary Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+       <div class="text-sm text-purple-600 font-medium">
+        Jumlah Pembelian
+       </div>
+       <div id="total-shares-bought" class="text-2xl font-bold text-purple-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-pink-50 p-4 rounded-lg border-l-4 border-pink-500">
+       <div class="text-sm text-pink-600 font-medium">
+        Jumlah Penjualan
+       </div>
+       <div id="total-shares-sold" class="text-2xl font-bold text-pink-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+       <div class="text-sm text-indigo-600 font-medium">
+        Nilai Syer Semasa
+       </div>
+       <div id="current-shares-value" class="text-2xl font-bold text-indigo-700">
+        RM 0
+       </div>
+      </div>
+      <div class="bg-teal-50 p-4 rounded-lg border-l-4 border-teal-500">
+       <div class="text-sm text-teal-600 font-medium">
+        Bilangan Transaksi
+       </div>
+       <div id="shares-transactions-count" class="text-2xl font-bold text-teal-700">
+        0
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Senarai Transaksi Syer</h3>
+     <div id="shares-history" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada transaksi syer</p>
+     </div>
+    </div>
+   </div><!-- Members Report Sub-section -->
+   <div id="activities-members" class="sub-section hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+     <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Laporan Ahli Koperasi</h3>
+      <div class="flex space-x-3"><select id="members-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="all">Semua Ahli</option> <option value="active">Ahli Aktif</option> <option value="inactive">Ahli Tidak Aktif</option> </select> <select id="members-sort" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="name">Susun Mengikut Nama</option> <option value="id">Susun Mengikut ID</option> <option value="date">Susun Mengikut Tarikh Daftar</option> </select> <button onclick="generateMembersReport()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"> 📊 Jana Laporan </button> <button onclick="printMembersReport()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"> 🖨️ Cetak PDF </button>
+      </div>
+     </div><!-- Summary Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+       <div class="text-sm text-blue-600 font-medium">
+        Jumlah Ahli
+       </div>
+       <div id="total-members-report" class="text-2xl font-bold text-blue-700">
+        0
+       </div>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+       <div class="text-sm text-green-600 font-medium">
+        Ahli Aktif
+       </div>
+       <div id="active-members" class="text-2xl font-bold text-green-700">
+        0
+       </div>
+      </div>
+      <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+       <div class="text-sm text-yellow-600 font-medium">
+        Ahli Baru (Bulan Ini)
+       </div>
+       <div id="new-members-month" class="text-2xl font-bold text-yellow-700">
+        0
+       </div>
+      </div>
+      <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+       <div class="text-sm text-purple-600 font-medium">
+        Ahli Baru (Tahun Ini)
+       </div>
+       <div id="new-members-year" class="text-2xl font-bold text-purple-700">
+        0
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Senarai Ahli</h3>
+     <div id="members-report-list" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada ahli berdaftar</p>
+     </div>
+    </div>
+   </div>
+  </div> <!-- Financial Section -->
+  <div id="financial-section" class="main-section hidden"><!-- Cash Book Sub-section -->
+   <div id="financial-cashbook" class="sub-section">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Catatan Buku Tunai</h3>
+     <form id="cashbook-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div><label for="cash-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis</label> <select id="cash-type" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"> <option value="">Pilih Jenis</option> <option value="masuk">Wang Masuk</option> <option value="keluar">Wang Keluar</option> </select>
+      </div>
+      <div><label for="cash-amount" class="block text-sm font-medium text-gray-700 mb-1">Jumlah (RM)</label> <input type="number" id="cash-amount" required min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div><label for="cash-description" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label> <input type="text" id="cash-description" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div><label for="cash-reference" class="block text-sm font-medium text-gray-700 mb-1">Rujukan</label> <input type="text" id="cash-reference" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div class="flex items-end"><button type="submit" class="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"> Tambah Catatan </button>
+      </div>
+     </form>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Lejar Buku Tunai</h3>
+      <div class="text-right">
+       <div class="text-sm text-gray-500">
+        Baki Semasa
+       </div>
+       <div id="current-cash-balance" class="text-xl font-bold text-indigo-600">
+        RM 0.00
+       </div>
+      </div>
+     </div>
+     <div id="cashbook-entries" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada catatan buku tunai</p>
+     </div>
+    </div>
+   </div><!-- Cash Flow Sub-section -->
+   <div id="financial-cashflow" class="sub-section hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+     <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Aliran Wang Masuk</h3>
+      <div id="cash-inflow" class="space-y-3">
+       <p class="text-gray-500 text-center py-8">Tiada aliran wang masuk</p>
+      </div>
+     </div>
+     <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Aliran Wang Keluar</h3>
+      <div id="cash-outflow" class="space-y-3">
+       <p class="text-gray-500 text-center py-8">Tiada aliran wang keluar</p>
+      </div>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Ringkasan Aliran Wang</h3>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="text-center p-4 bg-green-50 rounded-lg">
+       <div class="text-2xl font-bold text-green-600" id="total-inflow">
+        RM 0
+       </div>
+       <div class="text-sm text-gray-600">
+        Jumlah Wang Masuk
+       </div>
+      </div>
+      <div class="text-center p-4 bg-red-50 rounded-lg">
+       <div class="text-2xl font-bold text-red-600" id="total-outflow">
+        RM 0
+       </div>
+       <div class="text-sm text-gray-600">
+        Jumlah Wang Keluar
+       </div>
+      </div>
+      <div class="text-center p-4 bg-blue-50 rounded-lg">
+       <div class="text-2xl font-bold text-blue-600" id="net-cashflow">
+        RM 0
+       </div>
+       <div class="text-sm text-gray-600">
+        Aliran Wang Bersih
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Receipts & Vouchers Sub-section -->
+   <div id="financial-receipts" class="sub-section hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+     <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Jana Resit</h3>
+      <form id="receipt-form" class="space-y-4">
+       <div><label for="receipt-member" class="block text-sm font-medium text-gray-700 mb-1">Pilih Ahli</label> <select id="receipt-member" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"> <option value="">Pilih Ahli</option> </select>
+       </div>
+       <div><label for="receipt-amount" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Diterima (RM)</label> <input type="number" id="receipt-amount" required min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+       <div><label for="receipt-purpose" class="block text-sm font-medium text-gray-700 mb-1">Tujuan Bayaran</label> <input type="text" id="receipt-purpose" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div><button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"> Jana Resit </button>
+      </form>
+     </div>
+     <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Jana Baucar</h3>
+      <form id="voucher-form" class="space-y-4">
+       <div><label for="voucher-payee" class="block text-sm font-medium text-gray-700 mb-1">Dibayar Kepada</label> <input type="text" id="voucher-payee" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+       <div><label for="voucher-amount" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Dibayar (RM)</label> <input type="number" id="voucher-amount" required min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div>
+       <div><label for="voucher-purpose" class="block text-sm font-medium text-gray-700 mb-1">Tujuan Pembayaran</label> <input type="text" id="voucher-purpose" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+       </div><button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"> Jana Baucar </button>
+      </form>
+     </div>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Senarai Resit &amp; Baucar</h3>
+     <div id="receipts-vouchers-list" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada resit atau baucar dijana</p>
+     </div>
+    </div>
+   </div><!-- Transactions Sub-section -->
+   <div id="financial-transactions" class="sub-section hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+     <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Semua Transaksi</h3>
+      <div class="flex space-x-2"><select id="transaction-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"> <option value="">Semua Transaksi</option> <option value="member">Anggota</option> <option value="savings">Simpanan</option> <option value="loan">Pinjaman</option> <option value="shares">Syer</option> <option value="cashbook">Buku Tunai</option> </select>
+      </div>
+     </div>
+     <div id="all-transactions" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Belum ada transaksi</p>
+     </div>
+    </div>
+   </div><!-- Budget Sub-section -->
+   <div id="financial-budget" class="sub-section hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Belanjawan Koperasi</h3>
+     <form id="budget-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div><label for="budget-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label> <select id="budget-category" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"> <option value="">Pilih Kategori</option> <option value="pendapatan">Pendapatan</option> <option value="perbelanjaan">Perbelanjaan</option> </select>
+      </div>
+      <div><label for="budget-item" class="block text-sm font-medium text-gray-700 mb-1">Item Belanjawan</label> <input type="text" id="budget-item" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div><label for="budget-amount" class="block text-sm font-medium text-gray-700 mb-1">Jumlah (RM)</label> <input type="number" id="budget-amount" required min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div class="flex items-end"><button type="submit" class="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"> Tambah Item </button>
+      </div>
+     </form>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Laporan Belanjawan</h3>
+     <div id="budget-report" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada item belanjawan</p>
+     </div>
+    </div>
+   </div><!-- Accounts Sub-section -->
+   <div id="financial-accounts" class="sub-section hidden">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Tambah Akaun Baru</h3>
+     <form id="account-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div><label for="account-code" class="block text-sm font-medium text-gray-700 mb-1">Kod Akaun</label> <input type="text" id="account-code" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div><label for="account-name" class="block text-sm font-medium text-gray-700 mb-1">Nama Akaun</label> <input type="text" id="account-name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+      </div>
+      <div><label for="account-type" class="block text-sm font-medium text-gray-700 mb-1">Jenis Akaun</label> <select id="account-type" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"> <option value="">Pilih Jenis</option> <option value="aset">Aset</option> <option value="liabiliti">Liabiliti</option> <option value="ekuiti">Ekuiti</option> <option value="pendapatan">Pendapatan</option> <option value="perbelanjaan">Perbelanjaan</option> </select>
+      </div>
+      <div class="flex items-end"><button type="submit" class="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"> Tambah Akaun </button>
+      </div>
+     </form>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+     <h3 class="text-lg font-semibold text-gray-900 mb-4">Carta Akaun</h3>
+     <div id="accounts-list" class="space-y-3">
+      <p class="text-gray-500 text-center py-8">Tiada akaun didaftarkan</p>
+     </div>
+    </div>
+   </div>
+  </div> <!-- Footer -->
+  <footer class="gradient-bg text-white py-8 mt-8 relative overflow-hidden">
+   <div class="absolute inset-0 bg-black opacity-10"></div>
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center">
+     <div class="flex items-center justify-center mb-4">
+      <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-4">
+       <svg class="w-6 h-6 text-white" fill="currentColor" viewbox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
+       </svg>
+      </div>
+      <h3 class="text-xl font-bold">KOPERASI ADHAM AL-HUSAINY BERHAD</h3>
+     </div>
+     <p id="footer-text" class="text-white text-opacity-90 leading-relaxed max-w-2xl mx-auto mb-4">D/A 657 Jalan Stesen, Sungai Bakap, 14200 Sungai Jawi, Seberang Perai Selatan, Pulau Pinang.</p>
+     <div class="flex items-center justify-center space-x-6 text-sm text-white text-opacity-80">
+      <div class="flex items-center">
+       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+       </svg> Sistem Aktif 24/7
+      </div>
+      <div class="flex items-center">
+       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+       </svg> Data Selamat &amp; Terlindungi
+      </div>
+     </div>
+     <div class="mt-6 pt-4 border-t border-white border-opacity-20">
+      <p class="text-white text-opacity-70 text-sm">© 2024 Koperasi Adham Al-Husainy Berhad. Sistem Pengurusan Digital.</p>
+     </div>
+    </div>
+   </div>
+  </footer> <!-- Toast Notification -->
+  <div id="toast" class="toast hidden bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg"><span id="toast-message"></span>
+  </div>
+  <script>
+        let allData = [];
+        let currentRecordCount = 0;
+
+        // Default configuration
+        const defaultConfig = {
+            cooperative_name: "KOPERASI ADHAM AL-HUSAINY BERHAD",
+            address: "D/A 657 Jalan Stesen, Sungai Bakap, 14200 Sungai Jawi, Seberang Perai Selatan, Pulau Pinang",
+            footer_text: "D/A 657 Jalan Stesen, Sungai Bakap, 14200 Sungai Jawi, Seberang Perai Selatan, Pulau Pinang."
+        };
+
+        // Data handler for SDK
+        const dataHandler = {
+            onDataChanged(data) {
+                allData = data;
+                currentRecordCount = data.length;
+                updateDashboard();
+                updateMemberSelects();
+                updateMemberIdField();
+                renderAllSections();
+            }
+        };
+
+        // Initialize SDK
+        async function initializeApp() {
+            if (window.dataSdk) {
+                const result = await window.dataSdk.init(dataHandler);
+                if (!result.isOk) {
+                    console.error("Failed to initialize data SDK");
+                }
+            }
+
+            if (window.elementSdk) {
+                await window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange: async (config) => {
+                        document.getElementById('cooperative-title').textContent = config.cooperative_name || defaultConfig.cooperative_name;
+                        document.getElementById('cooperative-address').textContent = config.address || defaultConfig.address;
+                        document.getElementById('footer-text').textContent = config.footer_text || defaultConfig.footer_text;
+                    },
+                    mapToCapabilities: (config) => ({
+                        recolorables: [],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ["cooperative_name", config.cooperative_name || defaultConfig.cooperative_name],
+                        ["address", config.address || defaultConfig.address],
+                        ["footer_text", config.footer_text || defaultConfig.footer_text]
+                    ])
+                });
+            }
+        }
+
+        // Navigation functions
+        function showMainSection(sectionName) {
+            // Hide all main sections
+            document.querySelectorAll('.main-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Hide all sub navs
+            document.querySelectorAll('[id$="-subnav"]').forEach(nav => {
+                nav.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Show sub nav if applicable
+            if (sectionName === 'activities') {
+                document.getElementById('activities-subnav').classList.remove('hidden');
+                showSubSection('activities', 'savings'); // Default to savings
+            } else if (sectionName === 'financial') {
+                document.getElementById('financial-subnav').classList.remove('hidden');
+                showSubSection('financial', 'cashbook'); // Default to cashbook
+            }
+            
+            // Update main navigation
+            document.querySelectorAll('.main-nav-btn').forEach(btn => {
+                btn.classList.remove('border-white', 'text-indigo-200');
+            });
+            event.target.classList.add('border-white', 'text-indigo-200');
+        }
+
+        function showSubSection(mainSection, subSection) {
+            // Hide all sub-sections for this main section
+            document.querySelectorAll(`#${mainSection}-section .sub-section`).forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected sub-section
+            document.getElementById(`${mainSection}-${subSection}`).classList.remove('hidden');
+            
+            // Update sub navigation
+            const subNav = document.getElementById(`${mainSection}-subnav`);
+            subNav.querySelectorAll('.sub-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Parse IC number to get birth date and gender
+        function parseICNumber(icNumber) {
+            if (!icNumber || icNumber.length < 12) return { birthDate: '', gender: '' };
+            
+            const cleanIC = icNumber.replace(/[-\s]/g, '');
+            if (cleanIC.length !== 12) return { birthDate: '', gender: '' };
+            
+            const year = cleanIC.substring(0, 2);
+            const month = cleanIC.substring(2, 4);
+            const day = cleanIC.substring(4, 6);
+            
+            const fullYear = parseInt(year) <= 30 ? `20${year}` : `19${year}`;
+            const birthDate = `${day}/${month}/${fullYear}`;
+            
+            const lastDigit = parseInt(cleanIC.substring(11, 12));
+            const gender = lastDigit % 2 === 1 ? 'LELAKI' : 'PEREMPUAN';
+            
+            return { birthDate, gender };
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg`;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ms-MY', {
+                style: 'currency',
+                currency: 'MYR',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Generate next member ID
+        function generateNextMemberId() {
+            const members = allData.filter(item => item.type === 'member');
+            const nextNumber = members.length + 1;
+            return `A${nextNumber.toString().padStart(4, '0')}`;
+        }
+
+        // Update member ID field
+        function updateMemberIdField() {
+            const memberIdField = document.getElementById('member-id');
+            if (memberIdField) {
+                memberIdField.value = generateNextMemberId();
+            }
+        }
+
+        // Add member
+        async function addMember(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Mendaftar...';
+
+            const memberData = {
+                id: generateId(),
+                type: 'member',
+                member_id: document.getElementById('member-id').value,
+                member_name: document.getElementById('member-name').value.toUpperCase(),
+                ic_new: document.getElementById('ic-new').value,
+                ic_old: document.getElementById('ic-old').value,
+                birth_date: document.getElementById('birth-date').value,
+                gender: document.getElementById('gender').value,
+                race: document.getElementById('race').value,
+                religion: document.getElementById('religion').value,
+                address: document.getElementById('address').value,
+                phone_mobile: document.getElementById('phone-mobile').value,
+                email: document.getElementById('email').value,
+                occupation: document.getElementById('occupation').value,
+                employer_name: document.getElementById('employer-name').value,
+                amount: 0,
+                description: 'Pendaftaran ahli baru',
+                date: new Date().toISOString().split('T')[0],
+                status: 'active',
+                category: 'registration',
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(memberData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Daftar Ahli Baru';
+
+            if (result.isOk) {
+                form.reset();
+                document.getElementById('birth-date').value = '';
+                document.getElementById('gender').value = '';
+                showToast('Ahli berjaya didaftarkan!');
+            } else {
+                showToast('Gagal mendaftar ahli. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Add savings transaction
+        async function addSavings(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Memproses...';
+
+            const memberSelect = document.getElementById('savings-member');
+            const selectedMember = memberSelect.options[memberSelect.selectedIndex];
+            const type = document.getElementById('savings-type').value;
+            const amount = parseFloat(document.getElementById('savings-amount').value);
+
+            const savingsData = {
+                id: generateId(),
+                type: 'savings',
+                member_id: memberSelect.value,
+                member_name: selectedMember.textContent,
+                amount: type === 'tarik' ? -amount : amount,
+                description: type === 'setor' ? 'Deposit simpanan' : 'Pengeluaran simpanan',
+                date: new Date().toISOString().split('T')[0],
+                status: 'completed',
+                category: type,
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(savingsData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Proses Transaksi';
+
+            if (result.isOk) {
+                form.reset();
+                showToast(`Transaksi ${type} berjaya diproses!`);
+            } else {
+                showToast('Gagal memproses transaksi. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Add loan
+        async function addLoan(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Mengajukan...';
+
+            const memberSelect = document.getElementById('loan-member');
+            const selectedMember = memberSelect.options[memberSelect.selectedIndex];
+            const amount = parseFloat(document.getElementById('loan-amount').value);
+            const purpose = document.getElementById('loan-purpose').value;
+
+            const loanData = {
+                id: generateId(),
+                type: 'loan',
+                member_id: memberSelect.value,
+                member_name: selectedMember.textContent,
+                amount: amount,
+                description: `Pinjaman untuk: ${purpose}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'approved',
+                category: 'loan_disbursement',
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(loanData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Ajukan Pinjaman';
+
+            if (result.isOk) {
+                form.reset();
+                showToast('Pinjaman berjaya diluluskan!');
+            } else {
+                showToast('Gagal memohon pinjaman. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Add shares transaction
+        async function addShares(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Memproses...';
+
+            const memberSelect = document.getElementById('shares-member');
+            const selectedMember = memberSelect.options[memberSelect.selectedIndex];
+            const type = document.getElementById('shares-type').value;
+            const amount = parseFloat(document.getElementById('shares-amount').value);
+
+            const sharesData = {
+                id: generateId(),
+                type: 'shares',
+                member_id: memberSelect.value,
+                member_name: selectedMember.textContent,
+                amount: type === 'jual' ? -amount : amount,
+                description: type === 'beli' ? 'Pembelian syer' : 'Penjualan syer',
+                date: new Date().toISOString().split('T')[0],
+                status: 'completed',
+                category: type,
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(sharesData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Proses Syer';
+
+            if (result.isOk) {
+                form.reset();
+                showToast(`Transaksi syer ${type} berjaya diproses!`);
+            } else {
+                showToast('Gagal memproses transaksi syer. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Add cash book entry
+        async function addCashEntry(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Menambah...';
+
+            const type = document.getElementById('cash-type').value;
+            const amount = parseFloat(document.getElementById('cash-amount').value);
+            const description = document.getElementById('cash-description').value;
+            const reference = document.getElementById('cash-reference').value;
+
+            const cashData = {
+                id: generateId(),
+                type: 'cashbook',
+                member_id: '',
+                member_name: '',
+                amount: type === 'keluar' ? -amount : amount,
+                description: description,
+                date: new Date().toISOString().split('T')[0],
+                status: 'completed',
+                category: type,
+                reference: reference || '',
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(cashData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Tambah Catatan';
+
+            if (result.isOk) {
+                form.reset();
+                showToast(`Catatan wang ${type} berjaya ditambah!`);
+            } else {
+                showToast('Gagal menambah catatan. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Add budget item
+        async function addBudgetItem(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Menambah...';
+
+            const category = document.getElementById('budget-category').value;
+            const item = document.getElementById('budget-item').value;
+            const amount = parseFloat(document.getElementById('budget-amount').value);
+
+            const budgetData = {
+                id: generateId(),
+                type: 'budget',
+                member_id: '',
+                member_name: item,
+                amount: category === 'perbelanjaan' ? -amount : amount,
+                description: `Belanjawan ${category}: ${item}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'planned',
+                category: category,
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(budgetData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Tambah Item';
+
+            if (result.isOk) {
+                form.reset();
+                showToast(`Item belanjawan ${category} berjaya ditambah!`);
+            } else {
+                showToast('Gagal menambah item belanjawan. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Add account
+        async function addAccount(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Menambah...';
+
+            const accountData = {
+                id: generateId(),
+                type: 'account',
+                member_id: document.getElementById('account-code').value,
+                member_name: document.getElementById('account-name').value,
+                amount: 0,
+                description: `Akaun ${document.getElementById('account-type').value}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'active',
+                category: document.getElementById('account-type').value,
+                account_type: document.getElementById('account-type').value,
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(accountData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Tambah Akaun';
+
+            if (result.isOk) {
+                form.reset();
+                showToast('Akaun berjaya ditambah!');
+            } else {
+                showToast('Gagal menambah akaun. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Generate receipt/voucher numbers
+        function generateReceiptNumber() {
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const time = Date.now().toString().substr(-4);
+            return `R${year}${month}${day}${time}`;
+        }
+
+        function generateVoucherNumber() {
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const time = Date.now().toString().substr(-4);
+            return `V${year}${month}${day}${time}`;
+        }
+
+        // Generate receipt
+        async function generateReceipt(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Menjana...';
+
+            const memberSelect = document.getElementById('receipt-member');
+            const selectedMember = memberSelect.options[memberSelect.selectedIndex];
+            const amount = parseFloat(document.getElementById('receipt-amount').value);
+            const purpose = document.getElementById('receipt-purpose').value;
+            const receiptNumber = generateReceiptNumber();
+
+            const receiptData = {
+                id: generateId(),
+                type: 'receipt',
+                member_id: memberSelect.value,
+                member_name: selectedMember.textContent,
+                amount: amount,
+                description: `Resit: ${purpose}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'issued',
+                category: 'receipt',
+                receipt_number: receiptNumber,
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(receiptData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Jana Resit';
+
+            if (result.isOk) {
+                form.reset();
+                showToast(`Resit ${receiptNumber} berjaya dijana!`);
+            } else {
+                showToast('Gagal menjana resit. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Generate voucher
+        async function generateVoucher(event) {
+            event.preventDefault();
+            
+            if (currentRecordCount >= 999) {
+                showToast("Had maksimum 999 data dicapai. Padam beberapa data terlebih dahulu.", 'error');
+                return;
+            }
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Menjana...';
+
+            const payee = document.getElementById('voucher-payee').value;
+            const amount = parseFloat(document.getElementById('voucher-amount').value);
+            const purpose = document.getElementById('voucher-purpose').value;
+            const voucherNumber = generateVoucherNumber();
+
+            const voucherData = {
+                id: generateId(),
+                type: 'voucher',
+                member_id: '',
+                member_name: payee,
+                amount: amount,
+                description: `Baucar: ${purpose}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'issued',
+                category: 'voucher',
+                voucher_number: voucherNumber,
+                created_at: new Date().toISOString()
+            };
+
+            const result = await window.dataSdk.create(voucherData);
+            
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = 'Jana Baucar';
+
+            if (result.isOk) {
+                form.reset();
+                showToast(`Baucar ${voucherNumber} berjaya dijana!`);
+            } else {
+                showToast('Gagal menjana baucar. Sila cuba lagi.', 'error');
+            }
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const members = allData.filter(item => item.type === 'member');
+            const savings = allData.filter(item => item.type === 'savings');
+            const loans = allData.filter(item => item.type === 'loan');
+            const shares = allData.filter(item => item.type === 'shares');
+            const cashbook = allData.filter(item => item.type === 'cashbook');
+            
+            const totalSavings = savings.reduce((sum, item) => sum + (item.amount || 0), 0);
+            const totalLoans = loans.reduce((sum, item) => sum + (item.amount || 0), 0);
+            const totalShares = shares.reduce((sum, item) => sum + (item.amount || 0), 0);
+            const totalIncome = cashbook.filter(item => item.amount > 0).reduce((sum, item) => sum + item.amount, 0);
+            const totalExpenses = Math.abs(cashbook.filter(item => item.amount < 0).reduce((sum, item) => sum + item.amount, 0));
+            const cashBalance = cashbook.reduce((sum, item) => sum + (item.amount || 0), 0);
+            const balance = totalIncome - totalExpenses;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransactions = allData.filter(item => item.date === today && item.type !== 'member').length;
+
+            document.getElementById('total-members').textContent = members.length;
+            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('total-expenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('total-balance').textContent = formatCurrency(balance);
+            document.getElementById('today-transactions').textContent = todayTransactions;
+
+            // Update financial summary
+            document.getElementById('cash-balance').textContent = formatCurrency(cashBalance);
+            document.getElementById('total-savings').textContent = formatCurrency(totalSavings);
+            document.getElementById('total-loans').textContent = formatCurrency(totalLoans);
+            document.getElementById('total-shares').textContent = formatCurrency(totalShares);
+
+            // Recent transactions
+            const recentTransactions = allData
+                .filter(item => item.type !== 'member')
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .slice(0, 5);
+
+            renderRecentTransactions(recentTransactions);
+        }
+
+        // Render recent transactions
+        function renderRecentTransactions(transactions) {
+            const container = document.getElementById('recent-transactions');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl text-gray-400">📊</span>
+                        </div>
+                        <p class="text-gray-500 font-medium">Tiada transaksi</p>
+                        <p class="text-gray-400 text-sm mt-1">Transaksi akan dipaparkan di sini</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = transactions.map((transaction, index) => `
+                <div class="transaction-item flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm" style="animation-delay: ${index * 0.1}s">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl ${getTransactionColor(transaction.type)} flex items-center justify-center shadow-sm">
+                            <span class="text-lg">${getTransactionIcon(transaction.type)}</span>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">${transaction.member_name || 'Sistem'}</p>
+                            <p class="text-sm text-gray-600">${transaction.description}</p>
+                            <p class="text-xs text-gray-400 mt-1">${transaction.date}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-lg ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${transaction.amount >= 0 ? '+' : ''}${formatCurrency(transaction.amount)}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTransactionBadgeColor(transaction.type)}">
+                            ${getTransactionTypeName(transaction.type)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTransactionColor(type) {
+            const colors = {
+                'savings': 'bg-blue-100 text-blue-600',
+                'loan': 'bg-orange-100 text-orange-600',
+                'shares': 'bg-purple-100 text-purple-600',
+                'cashbook': 'bg-green-100 text-green-600',
+                'receipt': 'bg-teal-100 text-teal-600',
+                'voucher': 'bg-red-100 text-red-600'
+            };
+            return colors[type] || 'bg-gray-100 text-gray-600';
+        }
+
+        function getTransactionIcon(type) {
+            const icons = {
+                'savings': '💰',
+                'loan': '📋',
+                'shares': '📈',
+                'cashbook': '📖',
+                'receipt': '🧾',
+                'voucher': '📄'
+            };
+            return icons[type] || '📊';
+        }
+
+        function getTransactionBadgeColor(type) {
+            const colors = {
+                'savings': 'bg-blue-100 text-blue-800',
+                'loan': 'bg-orange-100 text-orange-800',
+                'shares': 'bg-purple-100 text-purple-800',
+                'cashbook': 'bg-green-100 text-green-800',
+                'receipt': 'bg-teal-100 text-teal-800',
+                'voucher': 'bg-red-100 text-red-800'
+            };
+            return colors[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getTransactionTypeName(type) {
+            const names = {
+                'savings': 'Simpanan',
+                'loan': 'Pinjaman',
+                'shares': 'Syer',
+                'cashbook': 'Tunai',
+                'receipt': 'Resit',
+                'voucher': 'Baucar'
+            };
+            return names[type] || 'Lain-lain';
+        }
+
+        // Update member selects
+        function updateMemberSelects() {
+            const members = allData.filter(item => item.type === 'member');
+            const selects = ['savings-member', 'loan-member', 'shares-member', 'receipt-member'];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    const currentValue = select.value;
+                    
+                    select.innerHTML = '<option value="">Pilih Ahli</option>' +
+                        members.map(member => 
+                            `<option value="${member.member_id}" ${member.member_id === currentValue ? 'selected' : ''}>${member.member_name}</option>`
+                        ).join('');
+                }
+            });
+        }
+
+        // Render all sections
+        function renderAllSections() {
+            renderMembers();
+            renderSavingsHistory();
+            renderLoans();
+            renderSharesHistory();
+            renderCashBookEntries();
+            renderCashFlow();
+            renderReceiptsVouchers();
+            renderAllTransactions();
+            renderBudgetReport();
+            renderAccounts();
+        }
+
+        // Render members
+        function renderMembers() {
+            const filter = document.getElementById('members-list-filter')?.value || 'all';
+            const sort = document.getElementById('members-list-sort')?.value || 'name';
+            let members = allData.filter(item => item.type === 'member');
+            
+            // Apply filter
+            if (filter !== 'all') {
+                members = members.filter(item => item.status === filter);
+            }
+            
+            // Apply sort
+            members.sort((a, b) => {
+                switch(sort) {
+                    case 'name': return a.member_name.localeCompare(b.member_name);
+                    case 'id': return a.member_id.localeCompare(b.member_id);
+                    case 'date': return new Date(a.date) - new Date(b.date);
+                    default: return 0;
+                }
+            });
+            
+            // Update summary cards
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const currentYear = new Date().getFullYear().toString();
+            const allMembers = allData.filter(item => item.type === 'member');
+            
+            const totalMembers = allMembers.length;
+            const activeMembers = allMembers.filter(item => item.status === 'active').length;
+            const newMembersMonth = allMembers.filter(item => item.date.startsWith(currentMonth)).length;
+            const newMembersYear = allMembers.filter(item => item.date.startsWith(currentYear)).length;
+            
+            if (document.getElementById('members-list-total')) {
+                document.getElementById('members-list-total').textContent = totalMembers;
+                document.getElementById('members-list-active').textContent = activeMembers;
+                document.getElementById('members-list-new-month').textContent = newMembersMonth;
+                document.getElementById('members-list-new-year').textContent = newMembersYear;
+            }
+            
+            const container = document.getElementById('members-list');
+            
+            if (members.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada ahli ditemui</p>';
+                return;
+            }
+
+            container.innerHTML = members.map((member, index) => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors" style="animation: fadeInUp 0.3s ease-out ${index * 0.05}s both">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-semibold text-sm">${member.member_id}</span>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">${member.member_name}</p>
+                            <p class="text-sm text-gray-500">K/P: ${member.ic_new || member.ic_old || 'Tiada'}</p>
+                            <p class="text-xs text-gray-400">
+                                ${member.race || ''} • ${member.religion || ''} • ${member.occupation || 'Tiada pekerjaan'}
+                            </p>
+                            <p class="text-xs text-gray-400">
+                                📧 ${member.email || 'Tiada email'} • 📱 ${member.phone_mobile || 'Tiada telefon'}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600 mb-1">Daftar: ${member.date}</p>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                            ${member.status === 'active' ? '✅ Aktif' : '❌ Tidak Aktif'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render savings history
+        function renderSavingsHistory() {
+            const savings = allData.filter(item => item.type === 'savings')
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const container = document.getElementById('savings-history');
+            
+            if (savings.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada transaksi simpanan</p>';
+                return;
+            }
+
+            container.innerHTML = savings.map(saving => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-900">${saving.member_name}</p>
+                        <p class="text-sm text-gray-500">${saving.description}</p>
+                        <p class="text-xs text-gray-400">${saving.date}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold ${saving.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${saving.amount >= 0 ? '+' : ''}${formatCurrency(saving.amount)}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            ${saving.category}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render loans
+        function renderLoans() {
+            const loans = allData.filter(item => item.type === 'loan')
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const container = document.getElementById('loans-list');
+            
+            if (loans.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada pinjaman</p>';
+                return;
+            }
+
+            container.innerHTML = loans.map(loan => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-900">${loan.member_name}</p>
+                        <p class="text-sm text-gray-500">${loan.description}</p>
+                        <p class="text-xs text-gray-400">${loan.date}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-orange-600">${formatCurrency(loan.amount)}</p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                            ${loan.status}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render shares history
+        function renderSharesHistory() {
+            const shares = allData.filter(item => item.type === 'shares')
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const container = document.getElementById('shares-history');
+            
+            if (shares.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada transaksi syer</p>';
+                return;
+            }
+
+            container.innerHTML = shares.map(share => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-900">${share.member_name}</p>
+                        <p class="text-sm text-gray-500">${share.description}</p>
+                        <p class="text-xs text-gray-400">${share.date}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold ${share.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${share.amount >= 0 ? '+' : ''}${formatCurrency(share.amount)}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            ${share.category}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render cash book entries
+        function renderCashBookEntries() {
+            const cashEntries = allData.filter(item => item.type === 'cashbook')
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            const container = document.getElementById('cashbook-entries');
+            let runningBalance = 0;
+            
+            if (cashEntries.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada catatan buku tunai</p>';
+                document.getElementById('current-cash-balance').textContent = formatCurrency(0);
+                return;
+            }
+
+            const sortedEntries = [...cashEntries].reverse();
+            const entriesWithBalance = sortedEntries.map(entry => {
+                runningBalance += entry.amount;
+                return { ...entry, balance: runningBalance };
+            }).reverse();
+
+            document.getElementById('current-cash-balance').textContent = formatCurrency(runningBalance);
+
+            container.innerHTML = entriesWithBalance.map(entry => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border-l-4 ${entry.amount >= 0 ? 'border-green-500' : 'border-red-500'}">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full ${entry.amount >= 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} flex items-center justify-center text-sm font-semibold">
+                                ${entry.amount >= 0 ? '📈' : '📉'}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">${entry.description}</p>
+                                <p class="text-sm text-gray-500">${entry.member_name || 'Sistem'} ${entry.reference ? `• Rujukan: ${entry.reference}` : ''}</p>
+                                <p class="text-xs text-gray-400">${entry.date}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold ${entry.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${entry.amount >= 0 ? '+' : ''}${formatCurrency(entry.amount)}
+                        </p>
+                        <p class="text-sm text-gray-600">Baki: ${formatCurrency(entry.balance)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render cash flow
+        function renderCashFlow() {
+            const cashEntries = allData.filter(item => item.type === 'cashbook');
+            const inflow = cashEntries.filter(item => item.amount > 0);
+            const outflow = cashEntries.filter(item => item.amount < 0);
+            
+            const totalInflow = inflow.reduce((sum, item) => sum + item.amount, 0);
+            const totalOutflow = Math.abs(outflow.reduce((sum, item) => sum + item.amount, 0));
+            const netCashflow = totalInflow - totalOutflow;
+
+            // Update summary
+            document.getElementById('total-inflow').textContent = formatCurrency(totalInflow);
+            document.getElementById('total-outflow').textContent = formatCurrency(totalOutflow);
+            document.getElementById('net-cashflow').textContent = formatCurrency(netCashflow);
+
+            // Render inflow
+            const inflowContainer = document.getElementById('cash-inflow');
+            if (inflow.length === 0) {
+                inflowContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada aliran wang masuk</p>';
+            } else {
+                inflowContainer.innerHTML = inflow.slice(0, 5).map(item => `
+                    <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">${item.description}</p>
+                            <p class="text-sm text-gray-500">${item.date}</p>
+                        </div>
+                        <p class="font-semibold text-green-600">${formatCurrency(item.amount)}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Render outflow
+            const outflowContainer = document.getElementById('cash-outflow');
+            if (outflow.length === 0) {
+                outflowContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada aliran wang keluar</p>';
+            } else {
+                outflowContainer.innerHTML = outflow.slice(0, 5).map(item => `
+                    <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">${item.description}</p>
+                            <p class="text-sm text-gray-500">${item.date}</p>
+                        </div>
+                        <p class="font-semibold text-red-600">${formatCurrency(Math.abs(item.amount))}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Render receipts and vouchers
+        function renderReceiptsVouchers() {
+            const receiptsVouchers = allData.filter(item => item.type === 'receipt' || item.type === 'voucher')
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            const container = document.getElementById('receipts-vouchers-list');
+            
+            if (receiptsVouchers.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada resit atau baucar dijana</p>';
+                return;
+            }
+
+            container.innerHTML = receiptsVouchers.map(item => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border-l-4 ${item.type === 'receipt' ? 'border-green-500' : 'border-red-500'}">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full ${item.type === 'receipt' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} flex items-center justify-center">
+                            ${item.type === 'receipt' ? '🧾' : '📄'}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">${item.type === 'receipt' ? item.receipt_number : item.voucher_number}</p>
+                            <p class="text-sm text-gray-600">${item.member_name}</p>
+                            <p class="text-sm text-gray-500">${item.description}</p>
+                            <p class="text-xs text-gray-400">${item.date}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold ${item.type === 'receipt' ? 'text-green-600' : 'text-red-600'}">
+                            ${formatCurrency(item.amount)}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.type === 'receipt' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${item.type === 'receipt' ? 'Resit' : 'Baucar'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render all transactions
+        function renderAllTransactions() {
+            const filter = document.getElementById('transaction-filter').value;
+            let transactions = allData.filter(item => item.type !== 'member');
+            
+            if (filter) {
+                transactions = transactions.filter(item => item.type === filter);
+            }
+            
+            transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            const container = document.getElementById('all-transactions');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada transaksi</p>';
+                return;
+            }
+
+            container.innerHTML = transactions.map(transaction => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full ${getTransactionColor(transaction.type)} flex items-center justify-center">
+                            ${getTransactionIcon(transaction.type)}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">${transaction.member_name || 'Sistem'}</p>
+                            <p class="text-sm text-gray-500">${transaction.description}</p>
+                            <p class="text-xs text-gray-400">${transaction.date}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${transaction.amount >= 0 ? '+' : ''}${formatCurrency(transaction.amount)}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTransactionColor(transaction.type)}">
+                            ${transaction.type}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render budget report
+        function renderBudgetReport() {
+            const budgetItems = allData.filter(item => item.type === 'budget');
+            const container = document.getElementById('budget-report');
+            
+            if (budgetItems.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada item belanjawan</p>';
+                return;
+            }
+
+            const pendapatan = budgetItems.filter(item => item.category === 'pendapatan');
+            const perbelanjaan = budgetItems.filter(item => item.category === 'perbelanjaan');
+            
+            const totalPendapatan = pendapatan.reduce((sum, item) => sum + item.amount, 0);
+            const totalPerbelanjaan = Math.abs(perbelanjaan.reduce((sum, item) => sum + item.amount, 0));
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-green-800 mb-3">Pendapatan (${pendapatan.length} item)</h4>
+                        <div class="space-y-2">
+                            ${pendapatan.map(item => `
+                                <div class="flex justify-between">
+                                    <span class="text-sm">${item.member_name}</span>
+                                    <span class="font-medium text-green-600">${formatCurrency(item.amount)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="border-t mt-3 pt-3">
+                            <div class="flex justify-between font-semibold">
+                                <span>Jumlah Pendapatan:</span>
+                                <span class="text-green-600">${formatCurrency(totalPendapatan)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-red-800 mb-3">Perbelanjaan (${perbelanjaan.length} item)</h4>
+                        <div class="space-y-2">
+                            ${perbelanjaan.map(item => `
+                                <div class="flex justify-between">
+                                    <span class="text-sm">${item.member_name}</span>
+                                    <span class="font-medium text-red-600">${formatCurrency(Math.abs(item.amount))}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="border-t mt-3 pt-3">
+                            <div class="flex justify-between font-semibold">
+                                <span>Jumlah Perbelanjaan:</span>
+                                <span class="text-red-600">${formatCurrency(totalPerbelanjaan)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-blue-800">Baki Belanjawan:</span>
+                        <span class="text-xl font-bold ${totalPendapatan - totalPerbelanjaan >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${formatCurrency(totalPendapatan - totalPerbelanjaan)}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render accounts
+        function renderAccounts() {
+            const accounts = allData.filter(item => item.type === 'account');
+            const container = document.getElementById('accounts-list');
+            
+            if (accounts.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada akaun didaftarkan</p>';
+                return;
+            }
+
+            const accountsByType = accounts.reduce((acc, account) => {
+                if (!acc[account.account_type]) acc[account.account_type] = [];
+                acc[account.account_type].push(account);
+                return acc;
+            }, {});
+
+            const typeColors = {
+                'aset': 'bg-blue-100 text-blue-800',
+                'liabiliti': 'bg-red-100 text-red-800',
+                'ekuiti': 'bg-purple-100 text-purple-800',
+                'pendapatan': 'bg-green-100 text-green-800',
+                'perbelanjaan': 'bg-orange-100 text-orange-800'
+            };
+
+            container.innerHTML = Object.entries(accountsByType).map(([type, accounts]) => `
+                <div class="mb-6">
+                    <h4 class="text-md font-semibold text-gray-800 mb-3 capitalize">${type}</h4>
+                    <div class="space-y-2">
+                        ${accounts.map(account => `
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium text-gray-900">${account.member_id} - ${account.member_name}</p>
+                                    <p class="text-sm text-gray-500">${account.description}</p>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${typeColors[account.account_type] || 'bg-gray-100 text-gray-800'}">
+                                    ${account.account_type}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Print application form
+        function printApplication() {
+            const formData = {
+                memberId: document.getElementById('member-id').value,
+                memberName: document.getElementById('member-name').value,
+                icNew: document.getElementById('ic-new').value,
+                icOld: document.getElementById('ic-old').value,
+                birthDate: document.getElementById('birth-date').value,
+                gender: document.getElementById('gender').value,
+                race: document.getElementById('race').value,
+                religion: document.getElementById('religion').value,
+                address: document.getElementById('address').value,
+                phoneMobile: document.getElementById('phone-mobile').value,
+                email: document.getElementById('email').value,
+                occupation: document.getElementById('occupation').value,
+                employerName: document.getElementById('employer-name').value
+            };
+
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Borang Permohonan Keahlian</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; font-size: 12px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+                        .header h1 { margin: 0; font-size: 18px; font-weight: bold; }
+                        .header p { margin: 5px 0; font-size: 11px; }
+                        .section { margin-bottom: 25px; }
+                        .section-title { font-weight: bold; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+                        .form-row { display: flex; margin-bottom: 8px; }
+                        .form-row.single { display: block; }
+                        .field { flex: 1; margin-right: 20px; }
+                        .field:last-child { margin-right: 0; }
+                        .field-label { font-weight: bold; margin-bottom: 3px; font-size: 11px; }
+                        .field-value { border-bottom: 1px solid #000; min-height: 18px; padding: 2px 5px; font-size: 12px; }
+                        .field-value.large { min-height: 40px; }
+                        @media print { body { margin: 15px; } .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>KOPERASI ADHAM AL-HUSAINY BERHAD</h1>
+                        <p>D/A 657 Jalan Stesen, Sungai Bakap, 14200 Sungai Jawi,<br>Seberang Perai Selatan, Pulau Pinang</p>
+                        <p style="margin-top: 15px; font-weight: bold; font-size: 14px;">BORANG PERMOHONAN KEAHLIAN</p>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">MAKLUMAT PERIBADI</div>
+                        <div class="form-row">
+                            <div class="field">
+                                <div class="field-label">ID Ahli:</div>
+                                <div class="field-value">${formData.memberId}</div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">Nama Penuh:</div>
+                                <div class="field-value">${formData.memberName}</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="field">
+                                <div class="field-label">No. K/P (Baru):</div>
+                                <div class="field-value">${formData.icNew}</div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">No. K/P (Lama):</div>
+                                <div class="field-value">${formData.icOld}</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="field">
+                                <div class="field-label">Tarikh Lahir:</div>
+                                <div class="field-value">${formData.birthDate}</div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">Jantina:</div>
+                                <div class="field-value">${formData.gender}</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="field">
+                                <div class="field-label">Bangsa:</div>
+                                <div class="field-value">${formData.race}</div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">Agama:</div>
+                                <div class="field-value">${formData.religion}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">ALAMAT DAN HUBUNGAN</div>
+                        <div class="form-row single">
+                            <div class="field">
+                                <div class="field-label">Alamat:</div>
+                                <div class="field-value large">${formData.address}</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="field">
+                                <div class="field-label">No. Tel Bimbit:</div>
+                                <div class="field-value">${formData.phoneMobile}</div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">Email:</div>
+                                <div class="field-value">${formData.email}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">MAKLUMAT PEKERJAAN</div>
+                        <div class="form-row">
+                            <div class="field">
+                                <div class="field-label">Pekerjaan:</div>
+                                <div class="field-value">${formData.occupation}</div>
+                            </div>
+                            <div class="field">
+                                <div class="field-label">Nama Majikan:</div>
+                                <div class="field-value">${formData.employerName}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 50px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="width: 200px; text-align: center;">
+                                <div style="border-bottom: 1px solid #000; height: 50px; margin-bottom: 5px;"></div>
+                                <div><strong>Tandatangan Pemohon</strong></div>
+                                <div style="margin-top: 10px;">
+                                    <div>Nama: ${formData.memberName}</div>
+                                    <div>Tarikh: ${new Date().toLocaleDateString('ms-MY')}</div>
+                                </div>
+                            </div>
+                            <div style="width: 200px; text-align: center;">
+                                <div style="border-bottom: 1px solid #000; height: 50px; margin-bottom: 5px;"></div>
+                                <div><strong>Cop & Tandatangan Koperasi</strong></div>
+                                <div style="margin-top: 10px;">
+                                    <div>Nama: _________________</div>
+                                    <div>Tarikh: _______________</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="no-print" style="text-align: center; margin-top: 20px;">
+                        <button onclick="window.print()" style="background: #4F46E5; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🖨️ Cetak</button>
+                        <button onclick="window.close()" style="background: #6B7280; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">❌ Tutup</button>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            
+            showToast('Borang permohonan dibuka dalam tetingkap baru untuk dicetak!');
+        }
+
+        // Generate reports functions
+        function generateSavingsReport() {
+            const period = document.getElementById('savings-period').value;
+            const savings = filterDataByPeriod(allData.filter(item => item.type === 'savings'), period);
+            
+            const deposits = savings.filter(item => item.amount > 0);
+            const withdrawals = savings.filter(item => item.amount < 0);
+            
+            const totalDeposits = deposits.reduce((sum, item) => sum + item.amount, 0);
+            const totalWithdrawals = Math.abs(withdrawals.reduce((sum, item) => sum + item.amount, 0));
+            const balance = totalDeposits - totalWithdrawals;
+            
+            document.getElementById('total-deposits').textContent = formatCurrency(totalDeposits);
+            document.getElementById('total-withdrawals').textContent = formatCurrency(totalWithdrawals);
+            document.getElementById('savings-balance').textContent = formatCurrency(balance);
+            document.getElementById('savings-transactions-count').textContent = savings.length;
+            
+            renderSavingsHistory();
+            showToast('Laporan simpanan berjaya dijana!');
+        }
+
+        function generateLoansReport() {
+            const period = document.getElementById('loans-period').value;
+            const status = document.getElementById('loans-status').value;
+            let loans = filterDataByPeriod(allData.filter(item => item.type === 'loan'), period);
+            
+            if (status !== 'all') {
+                loans = loans.filter(item => item.status === status);
+            }
+            
+            const totalAmount = loans.reduce((sum, item) => sum + item.amount, 0);
+            const approved = loans.filter(item => item.status === 'approved').length;
+            const pending = loans.filter(item => item.status === 'pending').length;
+            const rejected = loans.filter(item => item.status === 'rejected').length;
+            
+            document.getElementById('total-loans-amount').textContent = formatCurrency(totalAmount);
+            document.getElementById('approved-loans').textContent = approved;
+            document.getElementById('pending-loans').textContent = pending;
+            document.getElementById('rejected-loans').textContent = rejected;
+            
+            renderLoans();
+            showToast('Laporan pinjaman berjaya dijana!');
+        }
+
+        function generateSharesReport() {
+            const period = document.getElementById('shares-period').value;
+            const shares = filterDataByPeriod(allData.filter(item => item.type === 'shares'), period);
+            
+            const bought = shares.filter(item => item.amount > 0);
+            const sold = shares.filter(item => item.amount < 0);
+            
+            const totalBought = bought.reduce((sum, item) => sum + item.amount, 0);
+            const totalSold = Math.abs(sold.reduce((sum, item) => sum + item.amount, 0));
+            const currentValue = totalBought - totalSold;
+            
+            document.getElementById('total-shares-bought').textContent = formatCurrency(totalBought);
+            document.getElementById('total-shares-sold').textContent = formatCurrency(totalSold);
+            document.getElementById('current-shares-value').textContent = formatCurrency(currentValue);
+            document.getElementById('shares-transactions-count').textContent = shares.length;
+            
+            renderSharesHistory();
+            showToast('Laporan syer berjaya dijana!');
+        }
+
+        function generateMembersReport() {
+            const filter = document.getElementById('members-filter').value;
+            const sort = document.getElementById('members-sort').value;
+            let members = allData.filter(item => item.type === 'member');
+            
+            if (filter !== 'all') {
+                members = members.filter(item => item.status === filter);
+            }
+            
+            // Sort members
+            members.sort((a, b) => {
+                switch(sort) {
+                    case 'name': return a.member_name.localeCompare(b.member_name);
+                    case 'id': return a.member_id.localeCompare(b.member_id);
+                    case 'date': return new Date(a.date) - new Date(b.date);
+                    default: return 0;
+                }
+            });
+            
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const currentYear = new Date().getFullYear().toString();
+            
+            const newMembersMonth = members.filter(item => item.date.startsWith(currentMonth)).length;
+            const newMembersYear = members.filter(item => item.date.startsWith(currentYear)).length;
+            const activeMembers = members.filter(item => item.status === 'active').length;
+            
+            document.getElementById('total-members-report').textContent = members.length;
+            document.getElementById('active-members').textContent = activeMembers;
+            document.getElementById('new-members-month').textContent = newMembersMonth;
+            document.getElementById('new-members-year').textContent = newMembersYear;
+            
+            renderMembersReport(members);
+            showToast('Laporan ahli berjaya dijana!');
+        }
+
+        function filterDataByPeriod(data, period) {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            switch(period) {
+                case 'today':
+                    return data.filter(item => item.date === todayStr);
+                case 'week':
+                    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    return data.filter(item => new Date(item.date) >= weekAgo);
+                case 'month':
+                    const monthStr = today.toISOString().slice(0, 7);
+                    return data.filter(item => item.date.startsWith(monthStr));
+                case 'year':
+                    const yearStr = today.getFullYear().toString();
+                    return data.filter(item => item.date.startsWith(yearStr));
+                default:
+                    return data;
+            }
+        }
+
+        function renderMembersReport(members) {
+            const container = document.getElementById('members-report-list');
+            
+            if (members.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Tiada ahli ditemui</p>';
+                return;
+            }
+
+            container.innerHTML = members.map(member => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-blue-600 font-semibold">${member.member_id}</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">${member.member_name}</p>
+                                <p class="text-sm text-gray-500">K/P: ${member.ic_new || member.ic_old || 'Tiada'}</p>
+                                <p class="text-xs text-gray-400">${member.race || ''} • ${member.religion || ''} • ${member.occupation || ''}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Daftar: ${member.date}</p>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                            ${member.status}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Print report functions
+        function printSavingsReport() {
+            const period = document.getElementById('savings-period').value;
+            const savings = filterDataByPeriod(allData.filter(item => item.type === 'savings'), period);
+            
+            const deposits = savings.filter(item => item.amount > 0);
+            const withdrawals = savings.filter(item => item.amount < 0);
+            const totalDeposits = deposits.reduce((sum, item) => sum + item.amount, 0);
+            const totalWithdrawals = Math.abs(withdrawals.reduce((sum, item) => sum + item.amount, 0));
+            const balance = totalDeposits - totalWithdrawals;
+            
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printContent = generateReportHTML('Laporan Simpanan Ahli', period, [
+                { label: 'Jumlah Deposit', value: formatCurrency(totalDeposits) },
+                { label: 'Jumlah Pengeluaran', value: formatCurrency(totalWithdrawals) },
+                { label: 'Baki Simpanan', value: formatCurrency(balance) },
+                { label: 'Bilangan Transaksi', value: savings.length }
+            ], savings.map(item => [
+                item.date,
+                item.member_name,
+                item.description,
+                item.amount >= 0 ? formatCurrency(item.amount) : '',
+                item.amount < 0 ? formatCurrency(Math.abs(item.amount)) : ''
+            ]), ['Tarikh', 'Nama Ahli', 'Keterangan', 'Deposit', 'Pengeluaran']);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            showToast('Laporan simpanan dibuka untuk dicetak!');
+        }
+
+        function printLoansReport() {
+            const period = document.getElementById('loans-period').value;
+            const status = document.getElementById('loans-status').value;
+            let loans = filterDataByPeriod(allData.filter(item => item.type === 'loan'), period);
+            
+            if (status !== 'all') {
+                loans = loans.filter(item => item.status === status);
+            }
+            
+            const totalAmount = loans.reduce((sum, item) => sum + item.amount, 0);
+            const approved = loans.filter(item => item.status === 'approved').length;
+            const pending = loans.filter(item => item.status === 'pending').length;
+            const rejected = loans.filter(item => item.status === 'rejected').length;
+            
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printContent = generateReportHTML('Laporan Pinjaman Ahli', period, [
+                { label: 'Jumlah Pinjaman', value: formatCurrency(totalAmount) },
+                { label: 'Diluluskan', value: approved },
+                { label: 'Menunggu', value: pending },
+                { label: 'Ditolak', value: rejected }
+            ], loans.map(item => [
+                item.date,
+                item.member_name,
+                item.description,
+                formatCurrency(item.amount),
+                item.status
+            ]), ['Tarikh', 'Nama Ahli', 'Keterangan', 'Jumlah', 'Status']);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            showToast('Laporan pinjaman dibuka untuk dicetak!');
+        }
+
+        function printSharesReport() {
+            const period = document.getElementById('shares-period').value;
+            const shares = filterDataByPeriod(allData.filter(item => item.type === 'shares'), period);
+            
+            const bought = shares.filter(item => item.amount > 0);
+            const sold = shares.filter(item => item.amount < 0);
+            const totalBought = bought.reduce((sum, item) => sum + item.amount, 0);
+            const totalSold = Math.abs(sold.reduce((sum, item) => sum + item.amount, 0));
+            const currentValue = totalBought - totalSold;
+            
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printContent = generateReportHTML('Laporan Syer Ahli', period, [
+                { label: 'Jumlah Pembelian', value: formatCurrency(totalBought) },
+                { label: 'Jumlah Penjualan', value: formatCurrency(totalSold) },
+                { label: 'Nilai Syer Semasa', value: formatCurrency(currentValue) },
+                { label: 'Bilangan Transaksi', value: shares.length }
+            ], shares.map(item => [
+                item.date,
+                item.member_name,
+                item.description,
+                item.amount >= 0 ? formatCurrency(item.amount) : '',
+                item.amount < 0 ? formatCurrency(Math.abs(item.amount)) : ''
+            ]), ['Tarikh', 'Nama Ahli', 'Keterangan', 'Pembelian', 'Penjualan']);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            showToast('Laporan syer dibuka untuk dicetak!');
+        }
+
+        function printMembersReport() {
+            const filter = document.getElementById('members-filter').value;
+            const sort = document.getElementById('members-sort').value;
+            let members = allData.filter(item => item.type === 'member');
+            
+            if (filter !== 'all') {
+                members = members.filter(item => item.status === filter);
+            }
+            
+            members.sort((a, b) => {
+                switch(sort) {
+                    case 'name': return a.member_name.localeCompare(b.member_name);
+                    case 'id': return a.member_id.localeCompare(b.member_id);
+                    case 'date': return new Date(a.date) - new Date(b.date);
+                    default: return 0;
+                }
+            });
+            
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const currentYear = new Date().getFullYear().toString();
+            const newMembersMonth = members.filter(item => item.date.startsWith(currentMonth)).length;
+            const newMembersYear = members.filter(item => item.date.startsWith(currentYear)).length;
+            const activeMembers = members.filter(item => item.status === 'active').length;
+            
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printContent = generateReportHTML('Laporan Ahli Koperasi', 'all', [
+                { label: 'Jumlah Ahli', value: members.length },
+                { label: 'Ahli Aktif', value: activeMembers },
+                { label: 'Ahli Baru (Bulan Ini)', value: newMembersMonth },
+                { label: 'Ahli Baru (Tahun Ini)', value: newMembersYear }
+            ], members.map(member => [
+                member.member_id,
+                member.member_name,
+                member.ic_new || member.ic_old || 'Tiada',
+                member.race || '',
+                member.occupation || '',
+                member.date,
+                member.status
+            ]), ['ID Ahli', 'Nama', 'No. K/P', 'Bangsa', 'Pekerjaan', 'Tarikh Daftar', 'Status']);
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            showToast('Laporan ahli dibuka untuk dicetak!');
+        }
+
+        // Print members list report (for Data Ahli section)
+        function printMembersListReport() {
+            const filter = document.getElementById('members-list-filter')?.value || 'all';
+            const sort = document.getElementById('members-list-sort')?.value || 'name';
+            let members = allData.filter(item => item.type === 'member');
+            
+            if (filter !== 'all') {
+                members = members.filter(item => item.status === filter);
+            }
+            
+            members.sort((a, b) => {
+                switch(sort) {
+                    case 'name': return a.member_name.localeCompare(b.member_name);
+                    case 'id': return a.member_id.localeCompare(b.member_id);
+                    case 'date': return new Date(a.date) - new Date(b.date);
+                    default: return 0;
+                }
+            });
+            
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const currentYear = new Date().getFullYear().toString();
+            const allMembers = allData.filter(item => item.type === 'member');
+            const newMembersMonth = allMembers.filter(item => item.date.startsWith(currentMonth)).length;
+            const newMembersYear = allMembers.filter(item => item.date.startsWith(currentYear)).length;
+            const activeMembers = allMembers.filter(item => item.status === 'active').length;
+            
+            const filterText = {
+                'all': 'Semua Ahli',
+                'active': 'Ahli Aktif',
+                'inactive': 'Ahli Tidak Aktif'
+            };
+            
+            const sortText = {
+                'name': 'Nama',
+                'id': 'ID Ahli',
+                'date': 'Tarikh Daftar'
+            };
+            
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Senarai Ahli</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; font-size: 12px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+                        .header h1 { margin: 0; font-size: 18px; font-weight: bold; }
+                        .header p { margin: 5px 0; font-size: 11px; }
+                        .report-title { font-size: 16px; font-weight: bold; margin: 20px 0; text-align: center; }
+                        .filter-info { text-align: center; margin-bottom: 20px; font-size: 11px; color: #666; }
+                        .summary { display: flex; justify-content: space-around; margin: 20px 0; }
+                        .summary-item { text-align: center; padding: 10px; border: 1px solid #ccc; flex: 1; margin: 0 5px; }
+                        .summary-label { font-size: 10px; color: #666; }
+                        .summary-value { font-size: 14px; font-weight: bold; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; font-size: 9px; }
+                        th { background-color: #f5f5f5; font-weight: bold; }
+                        .member-row { page-break-inside: avoid; }
+                        .status-active { color: #059669; font-weight: bold; }
+                        .status-inactive { color: #dc2626; font-weight: bold; }
+                        .no-print { display: none; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>KOPERASI ADHAM AL-HUSAINY BERHAD</h1>
+                        <p>D/A 657 Jalan Stesen, Sungai Bakap, 14200 Sungai Jawi,<br>Seberang Perai Selatan, Pulau Pinang</p>
+                    </div>
+                    
+                    <div class="report-title">LAPORAN SENARAI AHLI</div>
+                    <div class="filter-info">
+                        <strong>Filter:</strong> ${filterText[filter]} | <strong>Susun:</strong> ${sortText[sort]}<br>
+                        <strong>Dijana pada:</strong> ${new Date().toLocaleDateString('ms-MY')} ${new Date().toLocaleTimeString('ms-MY')}<br>
+                        <strong>Jumlah ahli ditunjukkan:</strong> ${members.length} daripada ${allMembers.length} ahli
+                    </div>
+                    
+                    <div class="summary">
+                        <div class="summary-item">
+                            <div class="summary-label">Jumlah Ahli</div>
+                            <div class="summary-value">${allMembers.length}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Ahli Aktif</div>
+                            <div class="summary-value">${activeMembers}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Ahli Baru (Bulan Ini)</div>
+                            <div class="summary-value">${newMembersMonth}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Ahli Baru (Tahun Ini)</div>
+                            <div class="summary-value">${newMembersYear}</div>
+                        </div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 8%;">Bil</th>
+                                <th style="width: 10%;">ID Ahli</th>
+                                <th style="width: 20%;">Nama Penuh</th>
+                                <th style="width: 12%;">No. K/P</th>
+                                <th style="width: 8%;">Bangsa</th>
+                                <th style="width: 8%;">Agama</th>
+                                <th style="width: 12%;">Pekerjaan</th>
+                                <th style="width: 12%;">No. Telefon</th>
+                                <th style="width: 10%;">Tarikh Daftar</th>
+                                <th style="width: 8%;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${members.map((member, index) => `
+                                <tr class="member-row">
+                                    <td>${index + 1}</td>
+                                    <td><strong>${member.member_id}</strong></td>
+                                    <td><strong>${member.member_name}</strong></td>
+                                    <td>${member.ic_new || member.ic_old || 'Tiada'}</td>
+                                    <td>${member.race || '-'}</td>
+                                    <td>${member.religion || '-'}</td>
+                                    <td>${member.occupation || '-'}</td>
+                                    <td>${member.phone_mobile || '-'}</td>
+                                    <td>${member.date}</td>
+                                    <td class="${member.status === 'active' ? 'status-active' : 'status-inactive'}">
+                                        ${member.status === 'active' ? 'AKTIF' : 'TIDAK AKTIF'}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; font-size: 10px; color: #666;">
+                        <p><strong>Catatan:</strong></p>
+                        <ul style="margin: 5px 0; padding-left: 20px;">
+                            <li>Laporan ini mengandungi maklumat peribadi ahli yang sulit</li>
+                            <li>Sila pastikan dokumen ini disimpan dengan selamat</li>
+                            <li>Untuk sebarang pertanyaan, hubungi pentadbir sistem</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="no-print" style="text-align: center; margin-top: 20px;">
+                        <button onclick="window.print()" style="background: #4F46E5; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🖨️ Cetak</button>
+                        <button onclick="window.close()" style="background: #6B7280; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">❌ Tutup</button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            showToast('Laporan senarai ahli dibuka untuk dicetak!');
+        }
+
+        function generateReportHTML(title, period, summary, data, headers) {
+            const periodText = {
+                'all': 'Semua Tempoh',
+                'today': 'Hari Ini',
+                'week': 'Minggu Ini',
+                'month': 'Bulan Ini',
+                'year': 'Tahun Ini'
+            };
+            
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${title}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; font-size: 12px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+                        .header h1 { margin: 0; font-size: 18px; font-weight: bold; }
+                        .header p { margin: 5px 0; font-size: 11px; }
+                        .report-title { font-size: 16px; font-weight: bold; margin: 20px 0; text-align: center; }
+                        .summary { display: flex; justify-content: space-around; margin: 20px 0; }
+                        .summary-item { text-align: center; padding: 10px; border: 1px solid #ccc; flex: 1; margin: 0 5px; }
+                        .summary-label { font-size: 10px; color: #666; }
+                        .summary-value { font-size: 14px; font-weight: bold; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 10px; }
+                        th { background-color: #f5f5f5; font-weight: bold; }
+                        .no-print { display: none; }
+                        @media print { .no-print { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>KOPERASI ADHAM AL-HUSAINY BERHAD</h1>
+                        <p>D/A 657 Jalan Stesen, Sungai Bakap, 14200 Sungai Jawi,<br>Seberang Perai Selatan, Pulau Pinang</p>
+                    </div>
+                    
+                    <div class="report-title">${title}</div>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <strong>Tempoh: ${periodText[period] || period}</strong><br>
+                        <small>Dijana pada: ${new Date().toLocaleDateString('ms-MY')} ${new Date().toLocaleTimeString('ms-MY')}</small>
+                    </div>
+                    
+                    <div class="summary">
+                        ${summary.map(item => `
+                            <div class="summary-item">
+                                <div class="summary-label">${item.label}</div>
+                                <div class="summary-value">${item.value}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(row => `
+                                <tr>
+                                    ${row.map(cell => `<td>${cell}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="no-print" style="text-align: center; margin-top: 20px;">
+                        <button onclick="window.print()" style="background: #4F46E5; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🖨️ Cetak</button>
+                        <button onclick="window.close()" style="background: #6B7280; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">❌ Tutup</button>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        // Event listeners
+        document.getElementById('member-form').addEventListener('submit', addMember);
+        document.getElementById('cashbook-form').addEventListener('submit', addCashEntry);
+        document.getElementById('budget-form').addEventListener('submit', addBudgetItem);
+        document.getElementById('account-form').addEventListener('submit', addAccount);
+        document.getElementById('receipt-form').addEventListener('submit', generateReceipt);
+        document.getElementById('voucher-form').addEventListener('submit', generateVoucher);
+        document.getElementById('transaction-filter').addEventListener('change', renderAllTransactions);
+        document.getElementById('savings-period').addEventListener('change', generateSavingsReport);
+        document.getElementById('loans-period').addEventListener('change', generateLoansReport);
+        document.getElementById('loans-status').addEventListener('change', generateLoansReport);
+        document.getElementById('shares-period').addEventListener('change', generateSharesReport);
+        document.getElementById('members-filter').addEventListener('change', generateMembersReport);
+        document.getElementById('members-sort').addEventListener('change', generateMembersReport);
+        
+        // Event listeners for members list filters
+        if (document.getElementById('members-list-filter')) {
+            document.getElementById('members-list-filter').addEventListener('change', renderMembers);
+        }
+        if (document.getElementById('members-list-sort')) {
+            document.getElementById('members-list-sort').addEventListener('change', renderMembers);
+        }
+        
+        // IC number formatting and parsing
+        document.getElementById('ic-new').addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            
+            if (value.length > 12) {
+                value = value.substring(0, 12);
+            }
+            
+            if (value.length >= 6) {
+                if (value.length >= 8) {
+                    value = value.substring(0, 6) + '-' + value.substring(6, 8) + '-' + value.substring(8);
+                } else {
+                    value = value.substring(0, 6) + '-' + value.substring(6);
+                }
+            }
+            
+            this.value = value;
+            
+            const digitsOnly = value.replace(/\D/g, '');
+            if (digitsOnly.length === 12) {
+                const icData = parseICNumber(value);
+                document.getElementById('birth-date').value = icData.birthDate;
+                document.getElementById('gender').value = icData.gender;
+            } else {
+                document.getElementById('birth-date').value = '';
+                document.getElementById('gender').value = '';
+            }
+        });
+        
+        document.getElementById('member-name').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            updateMemberIdField();
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'993800e9d3291fe1',t:'MTc2MTI5MzQ4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
